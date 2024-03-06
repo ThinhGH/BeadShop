@@ -6,7 +6,7 @@ const Product = ({ product }) => {
   return (
     <Card className='my-3 p-3 rounded'>
       <Link to={`/product/${product._id}`}>
-        <Card.Img src={product.image} variant='top' />
+        <Card.Img src={product.image} variant='top' style={{ height: '320px', width:'256px' }}/>
       </Link>
 
       <Card.Body>
@@ -23,7 +23,7 @@ const Product = ({ product }) => {
           />
         </Card.Text>
 
-        <Card.Text as='h3'>${product.price}</Card.Text>
+        <Card.Text as='h3'>{product.price}vnđ</Card.Text>
       </Card.Body>
     </Card>
   );
