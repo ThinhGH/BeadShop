@@ -87,13 +87,18 @@ const OrderScreen = () => {
       .create({
         purchase_units: [
           {
-            amount: { value: order.totalPrice },
+            amount: { value: convertVNDtoUSD(order.totalPrice) },
           },
         ],
       })
       .then((orderID) => {
         return orderID;
       });
+  }
+
+  function convertVNDtoUSD(amountInVND, fixedRate = 0.000041) {
+    const amountInUSD = amountInVND * fixedRate;
+    return amountInUSD.toFixed(2);
   }
 
   const deliverHandler = async () => {
@@ -107,7 +112,7 @@ const OrderScreen = () => {
     <Message variant='danger'>{error.data.message}</Message>
   ) : (
     <>
-      <h1>Order {order._id}</h1>
+      <h1>Order: {order._id}</h1>
       <Row>
         <Col md={8}>
           <ListGroup variant='flush'>
@@ -141,7 +146,9 @@ const OrderScreen = () => {
                 <strong>Method: </strong>
                 {order.paymentMethod}
               </p>
-              {order.isPaid ? (
+              {order.paymentMethod === 'Cash on Delivery' ? (
+                <Message variant='success'>Paid by Cash on Delivery</Message>
+              ) : order.isPaid ? (
                 <Message variant='success'>Paid on {order.paidAt}</Message>
               ) : (
                 <Message variant='danger'>Not Paid</Message>
@@ -171,7 +178,16 @@ const OrderScreen = () => {
                           </Link>
                         </Col>
                         <Col md={4}>
-                          {item.qty} x {item.price}vnđ = {item.qty * item.price}vnđ
+                          {item.qty} x{' '}
+                          {item.price.toLocaleString('vi-VN', {
+                            style: 'currency',
+                            currency: 'VND',
+                          })}{' '}
+                          =
+                          {(item.qty * item.price).toLocaleString('vi-VN', {
+                            style: 'currency',
+                            currency: 'VND',
+                          })}
                         </Col>
                       </Row>
                     </ListGroup.Item>
@@ -190,28 +206,48 @@ const OrderScreen = () => {
               <ListGroup.Item>
                 <Row>
                   <Col>Items</Col>
-                  <Col>{order.itemsPrice}vnđ</Col>
+                  <Col>
+                    {order.itemsPrice.toLocaleString('vi-VN', {
+                      style: 'currency',
+                      currency: 'VND',
+                    })}
+                  </Col>
                 </Row>
               </ListGroup.Item>
               <ListGroup.Item>
                 <Row>
                   <Col>Shipping</Col>
-                  <Col>{order.shippingPrice}vnđ</Col>
+                  <Col>
+                    {order.shippingPrice.toLocaleString('vi-VN', {
+                      style: 'currency',
+                      currency: 'VND',
+                    })}
+                  </Col>
                 </Row>
               </ListGroup.Item>
               <ListGroup.Item>
                 <Row>
                   <Col>Tax</Col>
-                  <Col>{order.taxPrice}vnđ</Col>
+                  <Col>
+                    {order.taxPrice.toLocaleString('vi-VN', {
+                      style: 'currency',
+                      currency: 'VND',
+                    })}
+                  </Col>
                 </Row>
               </ListGroup.Item>
               <ListGroup.Item>
                 <Row>
                   <Col>Total</Col>
-                  <Col>{order.totalPrice}vnđ</Col>
+                  <Col>
+                    {order.totalPrice.toLocaleString('vi-VN', {
+                      style: 'currency',
+                      currency: 'VND',
+                    })}
+                  </Col>
                 </Row>
               </ListGroup.Item>
-              {!order.isPaid && (
+              {!order.isPaid && order.paymentMethod === 'PayPal' && (
                 <ListGroup.Item>
                   {loadingPay && <Loader />}
 

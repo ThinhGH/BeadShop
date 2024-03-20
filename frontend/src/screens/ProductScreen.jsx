@@ -10,6 +10,8 @@ import {
   Card,
   Button,
   Form,
+  FormControl,
+  InputGroup,
 } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import {
@@ -65,10 +67,26 @@ const ProductScreen = () => {
     }
   };
 
+  const handleQuantityChange = (event) => {
+    const newQuantity = parseInt(event.target.value, 10);
+    if (newQuantity >= 1 && newQuantity <= product.countInStock) {
+      setQty(newQuantity);
+    } else {
+      window.alert('Quantity must be between 1 and', product.countInStock);
+    }
+  };
+
   return (
     <>
-      <Link className='btn btn-light my-3' to='/'>
-        Go Back
+      <Link
+        className='btn btn-light my-3'
+        to='/'
+        style={{
+          backgroundColor: 'rgb(255, 224, 102)',
+          color: 'black',
+        }}
+      >
+        <b>Back</b>
       </Link>
       {isLoading ? (
         <Loader />
@@ -80,88 +98,132 @@ const ProductScreen = () => {
         <>
           <Meta title={product.name} description={product.description} />
           <Row>
-            <Col md={6}>
-              <Image src={product.image} alt={product.name} fluid />
+            <Col md={5}>
+              <Image
+                src={product.image}
+                alt={product.name}
+                className='border border-light'
+                fluid
+                style={{ boxShadow: '0 4px 8px rgba(0, 0, 0, 0.3)' }}
+              />
             </Col>
-            <Col md={3}>
-              <ListGroup variant='flush'>
-                <ListGroup.Item>
-                  <h3>{product.name}</h3>
-                </ListGroup.Item>
-                <ListGroup.Item>
-                  <Rating
-                    value={product.rating}
-                    text={`${product.numReviews} reviews`}
-                  />
-                </ListGroup.Item>
-                <ListGroup.Item>Price: {product.price}vnđ</ListGroup.Item>
-                <ListGroup.Item>
-                  Description: {product.description}
-                </ListGroup.Item>
-              </ListGroup>
-            </Col>
-            <Col md={3}>
-              <Card>
-                <ListGroup variant='flush'>
+            <Col md={7}>
+              <Row>
+                <Col md={6}>
                   <ListGroup.Item>
-                    <Row>
-                      <Col>Price:</Col>
-                      <Col>
-                        <strong>{product.price}vnđ</strong>
-                      </Col>
-                    </Row>
+                    <h3 style={{ color: 'black', marginBottom: '25px' }}>
+                      {product.name}
+                    </h3>
                   </ListGroup.Item>
                   <ListGroup.Item>
-                    <Row>
-                      <Col>Status:</Col>
-                      <Col>
-                        {product.countInStock > 0 ? 'In Stock' : 'Out Of Stock'}
-                      </Col>
-                    </Row>
+                    <Rating
+                      value={product.rating}
+                      text={`${product.numReviews} comments`}
+                    />
                   </ListGroup.Item>
+                  <ListGroup.Item
+                    style={{
+                      color: 'black',
+                      marginTop: '40px',
+                      fontSize: '45px',
+                    }}
+                  >
+                    {product.price.toLocaleString('vi-VN', {
+                      style: 'currency',
+                      currency: 'VND',
+                    })}
+                  </ListGroup.Item>
+                </Col>
+                <Col md={6}>
+                  <Card>
+                    <ListGroup variant='flush'>
+                      <ListGroup.Item style={{ color: 'black' }}>
+                        <Row>
+                          <Col>
+                            <b>Giá:</b>
+                          </Col>
+                          <Col>
+                            {product.price.toLocaleString('vi-VN', {
+                              style: 'currency',
+                              currency: 'VND',
+                            })}
+                          </Col>
+                        </Row>
+                      </ListGroup.Item>
+                      <ListGroup.Item style={{ color: 'black' }}>
+                        <Row>
+                          <Col>
+                            <b>Trạng thái:</b>
+                          </Col>
+                          <Col>
+                            {product.countInStock > 0
+                              ? 'Còn hàng'
+                              : 'Hết hàng'}
+                          </Col>
+                        </Row>
+                      </ListGroup.Item>
+                      {product.countInStock > 0 && (
+                        <ListGroup.Item style={{ color: 'black' }}>
+                          <Row>
+                            <Col>
+                              <b>Số lượng</b>
+                            </Col>
+                            <Col>
+                              <InputGroup className='product-quantity mb-3'>
+                                <FormControl
+                                  type='number'
+                                  min='1'
+                                  max={product.countInStock}
+                                  value={qty}
+                                  onChange={handleQuantityChange}
+                                  style={{ color: 'black' }}
+                                />
+                              </InputGroup>
+                            </Col>
+                          </Row>
+                        </ListGroup.Item>
+                      )}
 
-                  {/* Qty Select */}
-                  {product.countInStock > 0 && (
-                    <ListGroup.Item>
-                      <Row>
-                        <Col>Qty</Col>
-                        <Col>
-                          <Form.Control
-                            as='select'
-                            value={qty}
-                            onChange={(e) => setQty(Number(e.target.value))}
-                          >
-                            {[...Array(product.countInStock).keys()].map(
-                              (x) => (
-                                <option key={x + 1} value={x + 1}>
-                                  {x + 1}
-                                </option>
-                              )
-                            )}
-                          </Form.Control>
-                        </Col>
-                      </Row>
-                    </ListGroup.Item>
-                  )}
-
-                  <ListGroup.Item>
-                    <Button
-                      className='btn-block'
-                      type='button'
-                      disabled={product.countInStock === 0}
-                      onClick={addToCartHandler}
-                    >
-                      Add To Cart
-                    </Button>
+                      <ListGroup.Item>
+                        <Button
+                          className='btn-block'
+                          type='button'
+                          disabled={product.countInStock === 0}
+                          onClick={addToCartHandler}
+                          style={{
+                            backgroundColor: 'rgb(255, 224, 102)',
+                            color: 'black',
+                            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.3)',
+                            border: 'none',
+                          }}
+                        >
+                          <b>Add To Cart</b>
+                        </Button>
+                      </ListGroup.Item>
+                    </ListGroup>
+                  </Card>
+                </Col>
+              </Row>
+              <Row>
+                <Col md={12}>
+                  <ListGroup.Item
+                    style={{ color: 'rgb(77, 77, 77)', fontSize: '15px' }}
+                  >
+                    {product.description.split('\n').map((line, index) => (
+                      <span key={index}>
+                        {line}
+                        <br />
+                      </span>
+                    ))}
                   </ListGroup.Item>
-                </ListGroup>
-              </Card>
+                </Col>
+              </Row>
             </Col>
           </Row>
           <Row className='review'>
             <Col md={6}>
-              <h2>Reviews</h2>
-              {product.reviews.length === 0 && <Message>No Reviews</Message>}
+              <h2>Comments</h2>
+              {product.reviews.length === 0 && <Message>No Comments</Message>}
               <ListGroup variant='flush'>
                 {product.reviews.map((review) => (
                   <ListGroup.Item key={review._id}>
@@ -172,7 +234,7 @@ const ProductScreen = () => {
                   </ListGroup.Item>
                 ))}
                 <ListGroup.Item>
-                  <h2>Write a Customer Review</h2>
+                  <h2>Write a comment</h2>
 
                   {loadingProductReview && <Loader />}
 
@@ -209,7 +271,7 @@ const ProductScreen = () => {
                         type='submit'
                         variant='primary'
                       >
-                        Submit
+                        Post
                       </Button>
                     </Form>
                   ) : (

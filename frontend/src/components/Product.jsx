@@ -23,7 +23,12 @@ const Product = ({ product }) => {
           />
         </Card.Text>
 
-        <Card.Text as='h3'>{product.price}vnđ</Card.Text>
+        <Card.Text as='h3' style={{ color: 'rgb(0, 51, 0)' }}>
+          {product.price.toLocaleString('vi-VN', {
+            style: 'currency',
+            currency: 'VND',
+          })}
+        </Card.Text>
       </Card.Body>
     </Card>
   );
